@@ -1,3 +1,9 @@
+# TODO: Refactor Element to have the following capabilities:
+# 1. Insert child into a targetted element
+# 1a. Able to target by attribute value or iteration value (e.g. 5th tr tag)
+# 2. Output text with indentation based on incremented counter instead of ancestor_count
+# 3. Manage comments
+
 class Element:
     def __init__(self, tag, count, data="", **attributes):
         self.tag = tag
@@ -5,26 +11,40 @@ class Element:
         self.children = []
         self.ancestor_count = count
         self.data = data
+        self.close_type(tag)
 
-        if self.tag in ("meta", "link", "br", "img", "text"):
-            self.closed = True
-            self.auto_close = True
-        else:
-            self.closed = False
-            self.auto_close = False
+    def close_type(self, tag):
+        bool = self.tag in ("meta", "link", "br", "img", "text", "comment")
+        self.auto_close = bool 
+        self.closed = bool 
+
+    def __repr__(self):
+        return self.convert_to_string()
+
+    def __str__(self):
+        return self.convert_to_string()
 
     def convert_to_string(self):
         indent = "\n" + "\t" * self.ancestor_count
-        content = self._stringify_children()
-        attrs = self._stringify_attributes()
+        return self._select_output_template().format(
+                indent=indent, 
+                content=self._stringify_children(), 
+                attrs=self._stringify_attributes(),
+                tag=self.tag,
+                data=self.data
+            )
+
+    def _select_output_template(self):
         if self.tag == "text":
-            return f"{indent}{self.data}"
+            return "{indent}{data}"
+        elif self.tag == "comment":
+            return "{indent}<!-- {data} -->"
         elif self.auto_close:
-            return f"{indent}<{self.tag} {attrs}>"
+            return "{indent}<{tag} {attrs}>"
         elif self.tag == "":
-            return f"{content}"
+            return "{content}"
         else:
-            return f"{indent}<{self.tag} {attrs}>{content}{indent}</{self.tag}>"
+            return "{indent}<{tag} {attrs}>{content}{indent}</{tag}>"
 
     def _stringify_children(self):
         if len(self.children) > 0:
@@ -36,6 +56,9 @@ class Element:
             return " ".join([f"{key}='{self.attrs[key]}'" for key in self.attrs.keys()])
         return ""
 
+    def close(self):
+        self.closed = True
+
     def add_child(self, tag, data="", **attributes):
         for child in self.children[::-1]:
             if not child.is_closed():
@@ -44,15 +67,54 @@ class Element:
 
         self.children.append(Element(tag, self.ancestor_count + 1, data, **attributes))
 
-    def remove_child(self, index):
-        self.children.pop(index)
-
-    def close(self):
-        for child in self.children[::-1]:
-            if not child.is_closed():
-                child.close()
-                return
-        self.closed = True
-
     def is_closed(self):
         return self.closed
+
+    def remove_child(self, index):
+        return self.children.pop(index)
+
+    def search_attributes(self, attr, value):
+        return _search_attributes(attr, value, [])
+
+    def _search_attributes(self, attr, value, results):
+        if value in self.attrs.get(attr, ""):
+            results.append(self)
+
+        for child in children:
+            child.search_attributes(attr, value, results=results)
+            
+        return results
+            
+    def search_tag(self, tag):
+        return _search_tag(tag, [])
+
+    def _search_tag(self, tag, results):
+        if self.tag == tag:
+            results.append(self)
+
+        for child in self.children:
+            child.search_tag(tag, results=results)
+
+        return results
+            
+    def change_tag(self, new_tag):
+        self.tag = new_tag
+        self.close_type(tag)
+
+    def clear_attributes(self):
+        self.attrs.clear()
+    
+    def adopt_child(self, child):
+        child.change_ancestry(self.ancestor_count + 1)
+        self.children.append(child)
+
+    def change_ancestry(self, num):
+        self.ancestor_count = num
+
+if __name__ == "__main__":
+    root = Element("html", 0)
+    root.add_child("meta")
+    x = root.search_tag("meta")
+    x[0].add_child("link")
+    print(root.search_tag("link"))
+    
