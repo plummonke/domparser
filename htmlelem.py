@@ -24,7 +24,7 @@ class Element:
         return self.convert_to_string()
 
     def convert_to_string(self):
-        indent = "\n" + "\t" * self.ancestor_count
+        indent = "\t" * self.ancestor_count
         return self._select_output_template().format(
                 indent=indent, 
                 content=self._stringify_children(), 
