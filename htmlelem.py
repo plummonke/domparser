@@ -1,8 +1,3 @@
-# TODO: Refactor Element to have the following capabilities:
-# 1. Insert child into a targetted element
-# 1a. Able to target by attribute value or iteration value (e.g. 5th tr tag)
-# 2. Output text with indentation based on incremented counter instead of ancestor_count
-
 class Element:
     def __init__(self, tag, count, data="", **attributes):
         self.tag = tag
@@ -14,8 +9,8 @@ class Element:
 
     def set_close_type(self, tag):
         bool = self.tag in ("meta", "link", "br", "img", "text", "comment", "doc")
-        self.auto_close = bool 
-        self.closed = bool 
+        self.auto_close = bool
+        self.closed = bool
 
     def __repr__(self):
         return self.convert_to_string()
@@ -26,8 +21,8 @@ class Element:
     def convert_to_string(self):
         indent = "\t" * self.ancestor_count
         return self._select_output_template().format(
-                indent=indent, 
-                content=self._stringify_children(), 
+                indent=indent,
+                content=self._stringify_children(),
                 attrs=self._stringify_attributes(),
                 tag=self.tag,
                 data=self.data
@@ -60,7 +55,7 @@ class Element:
     def close_tag(self):
         for child in self.children[::-1]:
             if not child.is_closed():
-                child.close_tag() 
+                child.close_tag()
                 return
 
         self.closed = True
@@ -99,9 +94,9 @@ class Element:
 
         for child in self.children:
             results = child._search_attributes(attr, value, results)
-            
+
         return results
-            
+
     def search_tag(self, tag):
         return self._search_tag(tag, [])
 
@@ -113,14 +108,14 @@ class Element:
             results = child._search_tag(tag, results)
 
         return results
-            
+
     def change_tag(self, new_tag):
         self.tag = new_tag
         self.set_close_type(tag)
 
     def clear_attributes(self):
         self.attrs.clear()
-    
+
     def adopt_child_into(self, child, tag):
         target = self.search_tag(tag)
 
