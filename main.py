@@ -15,6 +15,13 @@ def filter_html(file):
     return "html" in file
 
 def main():
+    if len(sys.argv) < 3:
+        print("Missing arguments. This program needs:\n"
+                "\tA directory housing the original files; and\n"
+                "\ta template for the new files."
+                )
+        exit()
+
     root = sys.argv[len(sys.argv) - 2]
     local_files = map(fully_qual(root), os.listdir(root))
     try:
