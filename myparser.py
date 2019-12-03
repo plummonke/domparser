@@ -1,5 +1,4 @@
 import html.parser as hp
-import io
 
 class Parser(hp.HTMLParser):
     def __init__(self, root):
