@@ -72,11 +72,13 @@ def main():
 
             HTML_root = hp.root
 
-            try:
-                template_root.adopt_child_into(HTML_root.search_attributes("id", local_dir + "-pg")[0], "main") 
-            except IndexError:
-                pass
-            
+            ids = ("ab", "bb", "bsi", "cankers", "csi", "fd", "fid", "iwp", "mistletoes", "nid", "rd", "sap", "scrp", "sds", "wb")
+            for id in ids:
+                try:
+                    template_root.adopt_child_into(HTML_root.search_attributes("id", id + "-pg")[0], "main") 
+                except IndexError:
+                    continue
+                
             try:
                 template_root.adopt_child_into(HTML_root.search_attributes("id", "content")[0], "main")
             except IndexError:
