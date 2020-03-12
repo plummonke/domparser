@@ -66,12 +66,14 @@ def main():
 
         local_dir = os.path.split(dir)[1]
 
+        content_div = htmlelem.Element("div", 0, id="content")
+
         for file in files:
             with io.open(file, mode="r", encoding="utf-8", errors="ignore") as f:
                 hp.feed(f.read())
 
             HTML_root = hp.root
-            article = htmlelem.Element("article", 0)
+            article = htmlelem.Element("article", 0, id="")
 
             ids = ("ab", "bb", "bsi", "cankers", "csi", "fd", "fid", "iwp", "mistletoes", "nid", "rd", "sap", "scrp", "sds", "wb")
             for id in ids:
@@ -85,10 +87,11 @@ def main():
             except IndexError:
                 pass
 
-            template_root.adopt_child_into(article, "main")
+            content_div.adopt_child(article)
             hp.reset()
             HTML_root.clear_children()
-            
+
+        template_root.adopt_child_into(content_div, "main")
         output = os.path.join(root, "pages", local_dir + "_index.shtml")
         with io.open(output, mode="w+", newline="", encoding="utf-8", errors="ignore") as f:
             f.write(template_root.convert_to_string())
