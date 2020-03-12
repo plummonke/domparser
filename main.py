@@ -42,7 +42,7 @@ def main():
     hp.root = HTML_root
 
     for file in files:
-        with io.open(file, mode="r") as f:
+        with io.open(file, mode="r", encoding="utf-8", errors="ignore") as f:
             hp.feed(f.read())
         
         HTML_root = hp.root
@@ -55,7 +55,7 @@ def main():
         hp.reset()
         HTML_root.clear_children()
 
-        with io.open(file, mode="w", newline="") as f:
+        with io.open(file, mode="w", newline="", encoding="utf-8", errors="ignore") as f:
             f.write(template_root.convert_to_string())
 
         template_root.search_tag("main")[0].clear_children()
@@ -67,7 +67,7 @@ def main():
         local_dir = os.path.split(dir)[1]
 
         for file in files:
-            with io.open(file, mode="r") as f:
+            with io.open(file, mode="r", encoding="utf-8", errors="ignore") as f:
                 hp.feed(f.read())
 
             HTML_root = hp.root
@@ -86,7 +86,7 @@ def main():
             HTML_root.clear_children()
             
         output = os.path.join(root, "pages", local_dir + "_index.shtml")
-        with io.open(output, mode="w+", newline="") as f:
+        with io.open(output, mode="w+", newline="", encoding="utf-8", errors="ignore") as f:
             f.write(template_root.convert_to_string())
 
         template_root.search_tag("main")[0].clear_children()
