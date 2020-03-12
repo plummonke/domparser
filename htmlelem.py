@@ -25,7 +25,7 @@ class Element:
                 content=self._stringify_children(),
                 attrs=self._stringify_attributes(),
                 tag=self.tag,
-                data=self.data
+                data=self.data.strip()
             )
 
     def _select_output_template(self):
