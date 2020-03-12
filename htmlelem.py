@@ -30,17 +30,17 @@ class Element:
 
     def _select_output_template(self):
         if self.tag == "text":
-            return "{indent}{data}"
+            return "{data}"
         elif self.tag == "comment":
-            return "{indent}<!-- {data} -->"
+            return "{indent}<!-- {data} -->\n"
         elif self.tag == "doc":
-            return "<!{data}>"
+            return "<!{data}>\n"
         elif self.auto_close:
-            return "{indent}<{tag} {attrs}>"
+            return "{indent}<{tag} {attrs}>\n"
         elif self.tag == "":
-            return "{content}"
+            return "{content}\n"
         else:
-            return "{indent}<{tag} {attrs}>{content}{indent}</{tag}>"
+            return "{indent}<{tag} {attrs}>{content}{indent}</{tag}>\n"
 
     def _stringify_children(self):
         if len(self.children) > 0:
